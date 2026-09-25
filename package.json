@@ -1,0 +1,25 @@
+{
+  "name": "myntra-ai-spm-test",
+  "version": "1.0.0",
+  "description": "Dummy AI assets repo for AI-SPM scanner testing — covers all detectable asset types",
+  "private": true,
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@anthropic-ai/sdk": "^0.27.0",
+    "@langchain/core": "^0.2.0",
+    "@langchain/openai": "^0.2.0",
+    "@langchain/anthropic": "^0.2.0",
+    "openai": "^4.56.0",
+    "zod": "^3.23.0",
+    "express": "^4.19.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^22.0.0"
+  },
+  "scripts": {
+    "mcp-server": "node mcp_server/index.js",
+    "langchain-agent": "node langchain_agent/index.js"
+  }
+}

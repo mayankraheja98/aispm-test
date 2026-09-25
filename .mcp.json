@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "myntra-catalog": {
+      "command": "python",
+      "args": ["mcp_server/server.py"],
+      "env": { "CATALOG_API_URL": "http://catalog.internal.myntra.com/v2" }
+    },
+    "myntra-orders": {
+      "command": "node",
+      "args": ["mcp_server/orders_server.js"]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp/workspace"]
+    }
+  }
+}

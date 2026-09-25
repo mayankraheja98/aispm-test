@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "myntra-catalog": {
+      "command": "python",
+      "args": ["-m", "mcp_server.server"],
+      "cwd": "/workspace/myntra-ai-spm-test",
+      "env": {
+        "CATALOG_API_URL": "http://catalog.internal.myntra.com/v2",
+        "INTERNAL_AUTH_TOKEN": "${MYNTRA_INTERNAL_TOKEN}"
+      }
+    },
+    "myntra-analytics": {
+      "command": "node",
+      "args": ["analytics_mcp/dist/index.js"],
+      "cwd": "/workspace/myntra-analytics-mcp"
+    }
+  }
+}
