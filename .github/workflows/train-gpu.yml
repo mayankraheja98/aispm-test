@@ -1,0 +1,22 @@
+name: Train Model (GPU)
+on:
+  push:
+    paths: ["components/sklearn-model/**", "components/pytorch-finetune/**"]
+
+jobs:
+  train:
+    name: train
+    runs-on: [self-hosted, gpu]
+    env:
+      WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: pip install torch transformers peft trl wandb scikit-learn
+      - name: Run DVC pipeline
+        run: |
+          dvc repro
+          dvc push
+      - name: Upload model artifact
+        run: |
+          huggingface-cli upload my-org/my-model ./outputs/model

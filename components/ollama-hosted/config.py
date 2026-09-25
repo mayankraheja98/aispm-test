@@ -1,0 +1,6 @@
+"""Ollama connection config."""
+LLM_BASE_URL = "http://localhost:11434"
+OPENAI_API_BASE = "http://localhost:11434/v1"
+OPENAI_BASE_URL = "http://localhost:11434/v1"
+DEFAULT_MODEL = "llama3.2:3b"
+EMBEDDING_MODEL = "nomic-embed-text"

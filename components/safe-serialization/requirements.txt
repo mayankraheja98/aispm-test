@@ -1,0 +1,4 @@
+torch>=2.2.0
+safetensors>=0.4.0
+onnxruntime>=1.18.0
+transformers>=4.40.0

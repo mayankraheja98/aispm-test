@@ -1,0 +1,17 @@
+name: DVC Pipeline
+on:
+  schedule:
+    - cron: "0 2 * * 1"
+
+jobs:
+  run-pipeline:
+    name: run-pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install dvc dvc-s3 scikit-learn pandas
+      - run: dvc pull
+      - run: dvc repro
+      - run: dvc push
+      - name: Commit DVC lock
+        run: git add dvc.lock && git commit -m "ci: update dvc.lock" || true

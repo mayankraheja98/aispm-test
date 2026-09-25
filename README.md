@@ -1,85 +1,73 @@
-# Myntra AI-SPM Test Repo
+# myntra-ai-spm-test
 
-> **Purpose:** This is a dummy repository containing realistic example code for every AI asset type detectable by the AI-SPM scanner. It is used to validate the scanner's classification engine end-to-end.
+End-to-end test repository for the **Myntra AI-SPM** (AI Security Posture Management) scanner.
 
-## What This Repo Covers
+Each subdirectory under `components/` is designed to trigger a specific asset type classification and/or security flag when scanned.
 
-| Directory | Asset Type | Detection Signals |
+## Component → Expected Classification
+
+| Component | Expected Asset Type | Notes |
 |---|---|---|
-| `server.py` (root) | **MCP Server** | `from mcp import Server`, `@server.tool()`, `StdioServerTransport` |
-| `agent.py` (root) | **AI Agent (1st Party)** | `AgentExecutor`, `create_react_agent`, `langchain`, `langgraph` |
-| `train.py` (root) | **1st Party Model** | `trainer.train()`, `loss.backward()`, `torch`, `transformers`, `DataLoader` |
-| `app.py` (root) | **3rd Party Model (SaaS)** | `anthropic.Anthropic()`, `openai.OpenAI()`, `cohere.Client()` |
-| `pipeline.py` (root) | **AI Pipeline** | `prefect`, `@flow`, `@task`, `langchain chain` |
-| `mcp_server/` | MCP Server (detailed) | Full MCP server implementation |
-| `langchain_agent/` | Agent (LangChain) | LangChain + LangGraph customer service agent |
-| `adk_agent/` | Agent (Google ADK) | Google ADK pricing optimization agent |
-| `crewai_agent/` | Agent (CrewAI) | Multi-agent trend analysis crew |
-| `model_training/` | 1st Party Model | LoRA fine-tuning pipeline |
-| `saas_consumer/` | 3rd Party Model (SaaS) | OpenAI / Anthropic / Cohere API consumption |
-| `self_hosted_llm/` | 3rd Party Model (Hosted) | Ollama + llama.cpp on-prem inference |
-| `ai_pipeline/` | AI Pipeline | Prefect + LangChain daily enrichment pipeline |
-| `mcp_client/` | MCP Client | `claude_desktop_config.json` |
-| `skill_plugin/` | Skill / Plugin | `SKILL.md` + Anthropic tool use |
-| `.mcp.json` (root) | MCP Client | Root-level MCP client config |
-| `SKILL.md` (root) | Skill / Plugin | Root-level skill manifest |
+| `mcp-server` | `mcp_server` | FastMCP + `@mcp.tool` |
+| `mcp-client` | `mcp_client` | `ClientSession` + `StdioServerParameters` |
+| `langchain-agent` | `ai_agent_1st_party` | `AgentExecutor` + `Tool()` |
+| `autogen-agent` | `ai_agent_1st_party` | AutoGen `AssistantAgent` |
+| `crewai-agent` | `ai_agent_1st_party` | CrewAI `Crew` + `Agent` |
+| `sklearn-model` | `1st_party_model` | `GridSearchCV` + `joblib.dump` + DVC |
+| `pytorch-finetune` | `1st_party_model` | LoRA PEFT + `wandb.init` |
+| `hf-finetune` | `1st_party_model` | `push_to_hub` |
+| `dvc-model` | `1st_party_model` | `dvc.yaml` pipeline |
+| `chromadb-rag` | `rag_pipeline` | ChromaDB + `RetrievalQA` |
+| `faiss-rag` | `rag_pipeline` | `FAISS.from_documents` + `similarity_search` |
+| `llamaindex-rag` | `rag_pipeline` | LlamaIndex `VectorStoreIndex` |
+| `haystack-rag` | `rag_pipeline` | Haystack `Pipeline` + embedding retriever |
+| `ragas-eval` | `rag_pipeline` | RAGAS (STRONG_RAG_LIB) |
+| `prefect-pipeline` | `ai_pipeline` | `@flow` + `@task` |
+| `openai-saas` | `3rd_party_model_saas` | OpenAI + Anthropic direct API |
+| `azure-openai-saas` | `3rd_party_model_saas` | `*.openai.azure.com` endpoint |
+| `azure-ai-foundry-saas` | `3rd_party_model_saas` | `*.services.ai.azure.com` |
+| `bedrock-saas` | `3rd_party_model_saas` | `bedrock-runtime.*.amazonaws.com` |
+| `vertex-saas` | `3rd_party_model_saas` | `*-aiplatform.googleapis.com` |
+| `databricks-saas` | `3rd_party_model_saas` | `*.cloud.databricks.com` |
+| `hf-inference-ep-saas` | `3rd_party_model_saas` | `*.aws.endpoints.huggingface.cloud` |
+| `nvidia-nim-saas` | `3rd_party_model_saas` | `integrate.api.nvidia.com` |
+| `watsonx-saas` | `3rd_party_model_saas` | `us-south.ml.cloud.ibm.com` |
+| `deepseek-saas` | `3rd_party_model_saas` | `api.deepseek.com` |
+| `ollama-hosted` | `3rd_party_model_hosted` | `localhost:11434` self-hosted |
+| `vllm-hosted` | `3rd_party_model_hosted` | `localhost:8000` vLLM |
+| `system-prompt-chatbot` | `system_prompt` | `system_prompt.txt` + config |
+| `unsafe-serialization` | `1st_party_model` + 🚨 flags | `pickle.load`, `torch.load`, `joblib.load` |
+| `safe-serialization` | `1st_party_model` + ✅ flags | `safetensors`, `weights_only=True` |
 
-## Dependency Coverage (root requirements.txt)
+## GitHub Actions → Expected Classification
 
-The root `requirements.txt` intentionally contains all AI framework dependencies
-so the scanner can detect every asset type from a single repository scan.
+| Workflow | Expected Signal | Expected Type |
+|---|---|---|
+| `train-gpu.yml` | GPU runner + `dvc repro` + `WANDB_API_KEY` | `1st_party_model` |
+| `hf-publish.yml` | `HF_TOKEN` + `push_to_hub` | `1st_party_model` |
+| `serve-gpu.yml` | GPU runner only (no training) | `3rd_party_model_hosted` |
+| `openai-eval.yml` | `OPENAI_API_KEY` injected | `3rd_party_model_saas` |
+| `multi-provider.yml` | `ANTHROPIC_API_KEY` + `DEEPSEEK_API_KEY` | `3rd_party_model_saas` |
+| `dvc-pipeline.yml` | `dvc repro` + `dvc push` | `1st_party_model` |
 
+## Security Flags
+
+| Component | Flag | Severity |
+|---|---|---|
+| `unsafe-serialization` | `pickle_load` | CRITICAL |
+| `unsafe-serialization` | `torch_load_unsafe` | CRITICAL |
+| `unsafe-serialization` | `joblib_load` | CRITICAL |
+| `safe-serialization` | `safetensors_used` | INFO |
+| `safe-serialization` | `torch_load_safe` | INFO |
+| `safe-serialization` | `onnx_used` | INFO |
+
+## Scanning
+
+Point the AI-SPM scanner at this repo:
+
+```bash
+# Via API (direct repo scan)
+curl -X POST http://localhost:8000/api/scans/github \
+  -H "Content-Type: application/json" \
+  -d '{"repos": ["<org>/myntra-ai-spm-test"]}'
 ```
-mcp                           → MCP Server/Client
-langchain, langgraph          → AI Agent (LangChain)
-google-adk                    → AI Agent (Google ADK)
-crewai, autogen, pydantic-ai  → AI Agent (various)
-torch, transformers, peft     → 1st Party Model training
-openai, anthropic, cohere     → 3rd Party Model (SaaS)
-llama-cpp-python, ollama      → 3rd Party Model (Hosted)
-prefect                       → AI Pipeline
-```
-
-## How the Scanner Finds This Repo
-
-The AI-SPM GitHub scanner will find this repo via code search queries like:
-- `org:<your-org> openai OR anthropic OR langchain in:file filename:requirements.txt`
-- `org:<your-org> @modelcontextprotocol/sdk in:file filename:package.json`
-- `org:<your-org> from mcp import in:file extension:py`
-
-Then it will:
-1. Fetch `requirements.txt` and `package.json` → extract all dependency signals
-2. Sample root-level code files (`server.py`, `agent.py`, `train.py`, `app.py`, `pipeline.py`) → match code patterns
-3. Check for `SKILL.md` and `.mcp.json` in the file tree
-4. Run classifier → outputs `mcp_server` as primary type (highest priority), with all other types in `asset_types_all`
-
-## Expected Scanner Output
-
-```json
-{
-  "id": "GH-<your-org>/myntra-ai-spm-test",
-  "name": "myntra-ai-spm-test",
-  "asset_type": "mcp_server",
-  "frameworks": ["mcp", "langchain", "openai", "anthropic", "torch", "crewai", ...],
-  "classification_signals": {
-    "mcp_server": { "libs": ["mcp"], "code_match": true },
-    "ai_agent_1st_party": { "libs": ["langchain", "crewai", "google-adk"], "code_match": true },
-    "1st_party_model": { "libs": ["torch", "transformers"], "code_match": true },
-    "3rd_party_model_saas": { "libs": ["openai", "anthropic", "cohere"] },
-    "3rd_party_model_hosted": { "libs": ["llama-cpp-python", "ollama"] },
-    "skill_plugin": { "skill_file": true },
-    "mcp_client": { "config_files": true },
-    "ai_pipeline": { "libs": ["prefect"] }
-  },
-  "raw_metadata": {
-    "asset_types_all": ["mcp_server", "ai_agent_1st_party", "1st_party_model",
-                        "3rd_party_model_saas", "3rd_party_model_hosted",
-                        "skill_plugin", "mcp_client", "ai_pipeline"]
-  }
-}
-```
-
-## ⚠️ Not for Production Use
-
-All API keys in this repo are placeholder strings. No real credentials are included.
-This repo is purely for scanner validation and should be kept private within your GitHub org.
